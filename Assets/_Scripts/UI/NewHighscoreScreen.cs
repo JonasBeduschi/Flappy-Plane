@@ -9,7 +9,7 @@ namespace FlappyPlane
         [SerializeField] private Image medalImage;
         private InputField inputField;
 
-        protected override void HandlePlayerDeath(object sender, DeathEventArgs e)
+        protected override void HandlePlayerDeath(DeathEventArgs e)
         {
             if (e.Position > 0)
                 Show(e);

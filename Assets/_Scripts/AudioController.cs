@@ -16,6 +16,7 @@ namespace FlappyPlane
         [SerializeField] private AudioMixerSnapshot gameSnapshot;
         [SerializeField] private AudioMixerSnapshot endSnapshot;
         [SerializeField] private AudioMixer mainMixer;
+        private const float endTransitionTime = 1f;
 
         [SerializeField] private AudioClip endRecord;
         [SerializeField] private AudioClip endMedal;
@@ -33,8 +34,8 @@ namespace FlappyPlane
 
         private void Awake()
         {
-            EventSystem.OnPlayerHitSomething += PlayerHit;
-            EventSystem.OnPlayerDeath += PlayerDied;
+            Player.OnPlayerHitSomething += PlayerHit;
+            Player.OnPlayerDeath += PlayerDied;
             GameController.OnGameStart += GameStarted;
             startSnapshot.TransitionTo(.5f);
         }
@@ -46,20 +47,25 @@ namespace FlappyPlane
             StartCoroutine(StopDelayed(MenuSource));
         }
 
-        private void PlayerDied(object sender, DeathEventArgs e)
+        private void PlayerDied(DeathEventArgs e)
         {
-            if (e.Position <= 0 || e.Position > 10)
-                EndSource.clip = endLose;
-            else if (e.Position <= 3)
-                EndSource.clip = endMedal;
-            else
-                EndSource.clip = endRecord;
-            endSnapshot.TransitionTo(1);
+            EndSource.clip = EndClipForPosition(e.Position);
+            endSnapshot.TransitionTo(endTransitionTime);
             EndSource.Play();
             StartCoroutine(StopDelayed(GameSource));
         }
 
-        private void PlayerHit(object sender, CollisionArgs e)
+        private AudioClip EndClipForPosition(int position)
+        {
+            if (position <= 0 || position > 10)
+                return endLose;
+            else if (position <= 3)
+                return endMedal;
+            else
+                return endRecord;
+        }
+
+        private void PlayerHit(CollisionArgs e)
         {
             AudioClip[] clipsToPlay;
             switch (e.Collision) {
@@ -90,8 +96,8 @@ namespace FlappyPlane
 
         private void OnDestroy()
         {
-            EventSystem.OnPlayerHitSomething -= PlayerHit;
-            EventSystem.OnPlayerDeath -= PlayerDied;
+            Player.OnPlayerHitSomething -= PlayerHit;
+            Player.OnPlayerDeath -= PlayerDied;
             GameController.OnGameStart -= GameStarted;
         }
 
@@ -118,6 +124,7 @@ namespace FlappyPlane
         public void SetAttenuation(float volume, string mixerName)
         {
             float adjustedVolume = volume.Capped();
+            // adjustedVolume (0 to 1) becomes attenuation (-80 if 0) (-30 to 20 if not)
             float attenuation = adjustedVolume == 0 ? -80 : adjustedVolume * 50f - 30f;
             mainMixer.SetFloat(mixerName, attenuation);
         }

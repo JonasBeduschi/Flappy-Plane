@@ -39,16 +39,4 @@ namespace FlappyPlane
             Strength = strength;
         }
     }
-
-    /// <summary>EventArgs for selecting plane color/sprite</summary>
-    public class PlanePickArgs : EventArgs
-    {
-        /// <summary>Index of the plane sprite</summary>
-        public int Index { get; }
-
-        public PlanePickArgs(int planeIndex)
-        {
-            Index = planeIndex;
-        }
-    }
 }

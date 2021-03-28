@@ -37,7 +37,7 @@ namespace FlappyPlane
                 return;
             }
 
-            EventSystem.OnPlayerDeath += PlayerDied;
+            Player.OnPlayerDeath += PlayerDied;
             GameController.OnGameStart += StartGame;
         }
 
@@ -72,7 +72,7 @@ namespace FlappyPlane
             OnSpriteResetPosition?.Invoke(transforms[index].gameObject);
         }
 
-        private void PlayerDied(object sender, EventArgs e) => move = false;
+        private void PlayerDied(EventArgs e) => move = false;
 
         public void StartGame() => move = true;
 
@@ -83,7 +83,7 @@ namespace FlappyPlane
         private void OnDestroy()
         {
             GameController.OnGameStart -= StartGame;
-            EventSystem.OnPlayerDeath -= PlayerDied;
+            Player.OnPlayerDeath -= PlayerDied;
         }
 
 #if UNITY_EDITOR

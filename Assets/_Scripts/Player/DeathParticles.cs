@@ -9,17 +9,17 @@ namespace FlappyPlane
 
         private void Awake()
         {
-            EventSystem.OnPlayerDeath += PlayerDied;
+            Player.OnPlayerDeath += PlayerDied;
         }
 
-        public void PlayerDied(object sender, EventArgs args)
+        public void PlayerDied(EventArgs args)
         {
             deathParticles.Play();
         }
 
         private void OnDestroy()
         {
-            EventSystem.OnPlayerDeath -= PlayerDied;
+            Player.OnPlayerDeath -= PlayerDied;
         }
     }
 }

@@ -10,10 +10,10 @@ namespace FlappyPlane
 
         private void Awake()
         {
-            EventSystem.OnPlayerDeath += HandlePlayerDeath;
+            Player.OnPlayerDeath += HandlePlayerDeath;
         }
 
-        protected abstract void HandlePlayerDeath(object sender, DeathEventArgs e);
+        protected abstract void HandlePlayerDeath(DeathEventArgs e);
 
         protected virtual void Show(DeathEventArgs e)
         {
@@ -23,7 +23,7 @@ namespace FlappyPlane
 
         private void OnDestroy()
         {
-            EventSystem.OnPlayerDeath -= HandlePlayerDeath;
+            Player.OnPlayerDeath -= HandlePlayerDeath;
         }
     }
 }

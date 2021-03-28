@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 namespace FlappyPlane
 {
@@ -9,6 +10,7 @@ namespace FlappyPlane
         private Toggle[] toggles;
         private Slider[] sliders;
         private float[] values;
+        public static Action<int> OnPlanePick;
 
         private void Awake()
         {
@@ -38,7 +40,7 @@ namespace FlappyPlane
 
         public void PickPlane(int index)
         {
-            EventSystem.FireEvent(this, new PlanePickArgs(index));
+            OnPlanePick(index);
             values[0] = index;
         }
 

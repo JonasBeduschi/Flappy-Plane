@@ -16,12 +16,12 @@ namespace FlappyPlane
         private static string GetFormatedHighscores()
         {
             StringBuilder builder = new StringBuilder();
-            string temp;
+            string highscorerName;
             for (int i = 0; i < Highscore.HighscoresNames.Length; i++) {
-                temp = Highscore.HighscoresNames[i];
-                while (temp.Length < 3)
-                    temp += " ";
-                builder.Append(temp);
+                highscorerName = Highscore.HighscoresNames[i];
+                while (highscorerName.Length < 3)
+                    highscorerName += " ";
+                builder.Append(highscorerName);
                 builder.Append(" ");
                 builder.AppendLine(Highscore.HighscoresValues[i].ToString());
             }

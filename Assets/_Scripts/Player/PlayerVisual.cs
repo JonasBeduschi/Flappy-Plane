@@ -9,7 +9,7 @@ namespace FlappyPlane
         private SpriteRenderer spriteRenderer;
         private Rigidbody2D rb;
         private bool gameStarted = false;
-        private bool playerDead = false;
+        private bool playerAlive = true;
 
         [SerializeField] private float timePerFrame;
         [SerializeField] private PlaneArray[] planes;
@@ -28,14 +28,15 @@ namespace FlappyPlane
         {
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            EventSystem.OnPlanePick += PlanePicked;
-            EventSystem.OnPlayerDeath += PlayerDied;
+
             GameController.OnGameStart += GameStarted;
+            SettingsWindow.OnPlanePick += PlanePicked;
+            Player.OnPlayerDeath += PlayerDied;
         }
 
         private void Update()
         {
-            if (gameStarted && !playerDead)
+            if (gameStarted && playerAlive)
                 UpdateRotation();
             UpdateSprite();
         }
@@ -45,9 +46,9 @@ namespace FlappyPlane
             gameStarted = true;
         }
 
-        private void PlayerDied(object sender, DeathEventArgs e)
+        private void PlayerDied(DeathEventArgs e)
         {
-            playerDead = true;
+            playerAlive = false;
         }
 
         private void UpdateSprite()
@@ -58,12 +59,13 @@ namespace FlappyPlane
 
             timer -= timePerFrame;
             currentAnimation += 1;
+            // Show the updated frame
             spriteRenderer.sprite = planes[planeColor].frames[currentAnimation.PingPong(planes[planeColor].frames.Length - 1)];
         }
 
-        private void PlanePicked(object sender, PlanePickArgs e)
+        private void PlanePicked(int index)
         {
-            planeColor = e.Index;
+            planeColor = index;
         }
 
         private void UpdateRotation()

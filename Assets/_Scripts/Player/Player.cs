@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace FlappyPlane
@@ -15,7 +16,11 @@ namespace FlappyPlane
         private Vector2 forceVector;
         private bool dead = true;
         private InputActions input;
-        private AudioController audioController;
+        private const float minPosX = -.8f;
+        //private AudioController audioController;
+
+        public static Action<DeathEventArgs> OnPlayerDeath;
+        public static Action<CollisionArgs> OnPlayerHitSomething;
 
         private void Awake()
         {
@@ -25,7 +30,7 @@ namespace FlappyPlane
             rb.simulated = false;
             GameController.OnGameStart += StartGame;
             Score.OnScoreChange += AdjustPosition;
-            audioController = FindObjectOfType<AudioController>();
+            //audioController = FindObjectOfType<AudioController>();
         }
 
         private void OnEnable()
@@ -55,10 +60,11 @@ namespace FlappyPlane
             TryToJump();
         }
 
+        // Adjust x position based on score, down to minPosX
         private void AdjustPosition(int score)
         {
             Vector3 temp = transform.position;
-            temp.x = -.8f * ((float)score / GameController.ScoreToMaxSpeed).Capped(0, 1);
+            temp.x = minPosX * ((float)score / GameController.ScoreToMaxSpeed).Capped(0, 1);
             transform.position = temp;
         }
 
@@ -67,16 +73,17 @@ namespace FlappyPlane
 #if UNITY_EDITOR
             if (cheat)
                 return;
-
 #endif
+            // Find out what the player collided with
             CollisionObject co = collision.gameObject.tag switch
             {
                 "Ground" => CollisionObject.Ground,
-                "Rock" => CollisionObject.Ground,
-                "Roof" => CollisionObject.Ground,
+                "Rock" => CollisionObject.Rock,
+                "Roof" => CollisionObject.Roof,
                 _ => CollisionObject.Ground,
             };
-            EventSystem.FireEvent(this, new CollisionArgs(co, collision.relativeVelocity.magnitude));
+
+            OnPlayerHitSomething?.Invoke(new CollisionArgs(co, collision.relativeVelocity.magnitude));
             if (!dead)
                 Die(new DeathEventArgs(Score.CurrentScore, co));
         }
@@ -85,19 +92,17 @@ namespace FlappyPlane
         {
             if (dead)
                 return;
-            if (collision.CompareTag("Hole")) {
-                collision.enabled = false;
-                StartCoroutine(ReenableCollider(collision));
+
+            collision.enabled = false;
+            StartCoroutine(ReEnableCollider(collision));
+
+            if (collision.CompareTag("Hole"))
                 Score.AddPoints(1);
-            }
-            else if (collision.CompareTag("Star")) {
-                collision.enabled = false;
-                StartCoroutine(ReenableCollider(collision));
+            else if (collision.CompareTag("Star"))
                 collision.GetComponent<Star>().Hit();
-            }
         }
 
-        private IEnumerator ReenableCollider(Collider2D collider)
+        private IEnumerator ReEnableCollider(Collider2D collider)
         {
             yield return new WaitForSeconds(2f / GameController.Speed);
             collider.enabled = true;
@@ -106,7 +111,7 @@ namespace FlappyPlane
         private void Die(DeathEventArgs args)
         {
             dead = true;
-            EventSystem.FireEvent(this, args);
+            OnPlayerDeath?.Invoke(args);
         }
 
         private void OnDestroy()
