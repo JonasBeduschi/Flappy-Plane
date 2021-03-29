@@ -50,6 +50,7 @@
 
         public static void LoadHighscore()
         {
+            // Dummy arrays to force the loading
             string[] s = HighscoresNames;
             int[] i = HighscoresValues;
         }

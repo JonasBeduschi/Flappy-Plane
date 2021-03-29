@@ -29,6 +29,8 @@ namespace FlappyPlane
 
         private Sprite GetCurrentSprite()
         {
+            // Change to spritesToChange[X] when reaching scoreToChangeSprite[X] points
+            // But make sure that each sprite is used at least once
             if (currentSprite < spritesToChange.Length - 1 && Score.CurrentScore >= scoreToChangeSprite[currentSprite + 1])
                 currentSprite++;
             return spritesToChange[currentSprite];

@@ -2,9 +2,9 @@
 {
     public class TryAgainScreen : EndingWindow
     {
-        protected override void HandlePlayerDeath(object sender, DeathEventArgs e)
+        protected override void HandlePlayerDeath(DeathEventArgs e)
         {
-            if (e.Position <= 0)
+            if (e.Result == PlayerResult.None)
                 Show(e);
         }
 

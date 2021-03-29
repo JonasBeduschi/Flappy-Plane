@@ -4,6 +4,8 @@ namespace FlappyPlane
 {
     public enum CollisionObject { Rock, Roof, Ground }
 
+    public enum PlayerResult { None, Highscore, Medal }
+
     /// <summary>EventArgs for the death of the player</summary>
     public class DeathEventArgs : EventArgs
     {
@@ -16,11 +18,23 @@ namespace FlappyPlane
         /// <summary>The reason why the player died</summary>
         public CollisionObject Collision { get; }
 
+        /// <summary>The result based on the position</summary>
+        public PlayerResult Result { get; }
+
         public DeathEventArgs(int score, CollisionObject collision = CollisionObject.Rock)
         {
             PlayerScore = score;
-            Position = Highscore.CheckHighscore(score);
             Collision = collision;
+
+            Position = Highscore.CheckHighscore(score);
+
+            Result = PlayerResult.None;
+            if (Position >= 1) {
+                if (Position <= 3)
+                    Result = PlayerResult.Medal;
+                else if (Position <= 10)
+                    Result = PlayerResult.Highscore;
+            }
         }
     }
 

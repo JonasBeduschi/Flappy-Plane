@@ -11,7 +11,7 @@ namespace FlappyPlane
 
         protected override void HandlePlayerDeath(DeathEventArgs e)
         {
-            if (e.Position > 0)
+            if (e.Result == PlayerResult.Highscore || e.Result == PlayerResult.Medal)
                 Show(e);
         }
 
@@ -19,7 +19,7 @@ namespace FlappyPlane
         {
             base.Show(e);
 
-            if (e.Position <= medals.Length) {
+            if (e.Result == PlayerResult.Medal) {
                 medalImage.enabled = true;
                 medalImage.sprite = medals[e.Position - 1];
             }

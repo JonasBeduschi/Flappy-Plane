@@ -17732,9 +17732,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSource: {fileID: 1838980766}
   UISource: {fileID: 163840541}
-  EndSource: {fileID: 1182021985}
-  GameSource: {fileID: 2034856706}
-  MenuSource: {fileID: 2018601305}
+  EndMusicSource: {fileID: 1182021985}
+  GameMusicSource: {fileID: 2034856706}
+  MenuMusicSource: {fileID: 2018601305}
   startSnapshot: {fileID: 24500006, guid: c9d441b36d543664c8828a1258e2b8bf, type: 2}
   gameSnapshot: {fileID: -2206821238783013710, guid: c9d441b36d543664c8828a1258e2b8bf,
     type: 2}

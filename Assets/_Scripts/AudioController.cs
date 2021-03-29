@@ -9,9 +9,9 @@ namespace FlappyPlane
     {
         [SerializeField] private AudioSource playerSource;
         [SerializeField] private AudioSource UISource;
-        [SerializeField] private AudioSource EndSource;
-        [SerializeField] private AudioSource GameSource;
-        [SerializeField] private AudioSource MenuSource;
+        [SerializeField] private AudioSource EndMusicSource;
+        [SerializeField] private AudioSource GameMusicSource;
+        [SerializeField] private AudioSource MenuMusicSource;
         [SerializeField] private AudioMixerSnapshot startSnapshot;
         [SerializeField] private AudioMixerSnapshot gameSnapshot;
         [SerializeField] private AudioMixerSnapshot endSnapshot;
@@ -34,38 +34,21 @@ namespace FlappyPlane
 
         private void Awake()
         {
-            Player.OnPlayerHitSomething += PlayerHit;
-            Player.OnPlayerDeath += PlayerDied;
             GameController.OnGameStart += GameStarted;
+            Player.OnPlayerHitSomething += PlayerHitSomething;
+            Player.OnPlayerDeath += PlayerDied;
             startSnapshot.TransitionTo(.5f);
         }
 
         private void GameStarted()
         {
             gameSnapshot.TransitionTo(1);
-            GameSource.Play();
-            StartCoroutine(StopDelayed(MenuSource));
+            GameMusicSource.Play();
+            StartCoroutine(StopDelayed(MenuMusicSource));
         }
 
-        private void PlayerDied(DeathEventArgs e)
-        {
-            EndSource.clip = EndClipForPosition(e.Position);
-            endSnapshot.TransitionTo(endTransitionTime);
-            EndSource.Play();
-            StartCoroutine(StopDelayed(GameSource));
-        }
 
-        private AudioClip EndClipForPosition(int position)
-        {
-            if (position <= 0 || position > 10)
-                return endLose;
-            else if (position <= 3)
-                return endMedal;
-            else
-                return endRecord;
-        }
-
-        private void PlayerHit(CollisionArgs e)
+        private void PlayerHitSomething(CollisionArgs e)
         {
             AudioClip[] clipsToPlay;
             switch (e.Collision) {
@@ -83,6 +66,25 @@ namespace FlappyPlane
             PlayRandom(playerSource, clipsToPlay, (e.Strength / maxStr).Capped());
         }
 
+        private void PlayerDied(DeathEventArgs e)
+        {
+            EndMusicSource.clip = EndClipForResult(e.Result);
+            endSnapshot.TransitionTo(endTransitionTime);
+            EndMusicSource.Play();
+            StartCoroutine(StopDelayed(GameMusicSource));
+        }
+
+        private AudioClip EndClipForResult(PlayerResult result)
+        {
+            return result switch
+            {
+                PlayerResult.None => endLose,
+                PlayerResult.Highscore => endRecord,
+                PlayerResult.Medal => endMedal,
+                _ => endLose,
+            };
+        }
+
         private static void PlayRandom(AudioSource source, AudioClip[] clips, float volume = 1f)
         {
             source.PlayOneShot(clips[Random.Range(0, clips.Length)], volume);
@@ -96,9 +98,9 @@ namespace FlappyPlane
 
         private void OnDestroy()
         {
-            Player.OnPlayerHitSomething -= PlayerHit;
-            Player.OnPlayerDeath -= PlayerDied;
             GameController.OnGameStart -= GameStarted;
+            Player.OnPlayerHitSomething -= PlayerHitSomething;
+            Player.OnPlayerDeath -= PlayerDied;
         }
 
         public void PlayButton()

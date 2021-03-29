@@ -136,17 +136,4 @@ public class ExtensionsTests
     }
 
     #endregion PushAt Tests
-
-    /*
-    // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-    // `yield return null;` to skip a frame.
-    [UnityTest]
-    [Ignore("Example test")]
-    public IEnumerator ExtensionsTestsWithEnumeratorPasses()
-    {
-        // Use the Assert class to test conditions.
-        // Use yield to skip a frame.
-        yield return null;
-    }
-    */
 }
